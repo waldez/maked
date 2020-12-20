@@ -5,7 +5,23 @@
 const fs = require('fs');
 const util = require('util');
 const exec = util.promisify(require('child_process').exec);
-const [/*node*/,/*cwd*/, ...watchedPaths] = process.argv;
+const [/*node*/,/*cwd*/, ...args] = process.argv;
+
+const argsObj = {};
+// extract named parameters
+const watchedPaths = args.filter(arg => {
+    if (arg[0] === '-') {
+
+        let [key, value] = arg.substr(1).split('=');
+        value = typeof value === 'undefined' ? true : value;
+        argsObj[key] = value;
+
+        return false;
+    } else {
+        return true;
+    }
+});
+
 
 // const DEBOUNCE = 5 * 1000;
 const DEBOUNCE = 100;
@@ -21,7 +37,8 @@ async function runMake() {
     let result;
     let errors;
     try {
-        makeInProgress = exec('make');
+        const makeArgs = argsObj.target ? ` ${argsObj.target}`: '';
+        makeInProgress = exec('make' + makeArgs);
         const { stdout, stderr } = await makeInProgress;
         result = stdout;
         errors = stderr;
