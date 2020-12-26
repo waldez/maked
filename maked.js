@@ -37,6 +37,7 @@ async function runMake() {
     let result;
     let errors;
     try {
+        console.clear();
         const makeArgs = argsObj.target ? ` ${argsObj.target}`: '';
         makeInProgress = exec('make' + makeArgs);
         const { stdout, stderr } = await makeInProgress;
@@ -48,7 +49,7 @@ async function runMake() {
 
     if (errors) {
         console.error('ERRORS:\n', errors);
-        await exec(`notify-send "Compilation with errors:\\n${errors}"`);
+        await exec(`notify-send "Compilation with errors!"`);
     } else {
         await exec('notify-send "Compilation OK"');
     }
